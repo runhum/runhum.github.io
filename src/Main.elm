@@ -1,9 +1,8 @@
-module Main exposing (Model, Msg(..), init, main, subscriptions, update, view, viewLink)
+module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Element exposing (..)
 import Url
 
 
@@ -79,21 +78,7 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "URL Interceptor"
+    { title = "Test"
     , body =
-        [ text "The current URL is: "
-        , b [] [ text (Url.toString model.url) ]
-        , ul []
-            [ viewLink "/home"
-            , viewLink "/profile"
-            , viewLink "/reviews/the-century-of-the-self"
-            , viewLink "/reviews/public-opinion"
-            , viewLink "/reviews/shah-of-shahs"
-            ]
-        ]
+        [ Element.layout [] (text "hello") ]
     }
-
-
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
