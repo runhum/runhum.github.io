@@ -111,7 +111,9 @@ navbar =
         , paddingXY 20 0
         ]
         [ el [ alignLeft, Font.extraBold ] (text "Runar Hummelsund")
-        , link [ alignRight ] { url = "", label = text "Github" }
+        , link [ alignRight ] { url = "https://github.com/runhum", label = text "Github" }
+        , link [ alignRight ] { url = "", label = text "Link 1" }
+        , link [ alignRight ] { url = "", label = text "Link 2" }
         ]
 
 

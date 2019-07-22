@@ -11025,6 +11025,22 @@ var author$project$Main$navbar = A2(
 				[mdgriffith$elm_ui$Element$alignRight]),
 			{
 				label: mdgriffith$elm_ui$Element$text('Github'),
+				url: 'https://github.com/runhum'
+			}),
+			A2(
+			mdgriffith$elm_ui$Element$link,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$alignRight]),
+			{
+				label: mdgriffith$elm_ui$Element$text('Link 1'),
+				url: ''
+			}),
+			A2(
+			mdgriffith$elm_ui$Element$link,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$alignRight]),
+			{
+				label: mdgriffith$elm_ui$Element$text('Link 2'),
 				url: ''
 			})
 		]));
