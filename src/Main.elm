@@ -3,6 +3,8 @@ module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 import Browser
 import Browser.Navigation as Nav
 import Element exposing (..)
+import Element.Background as Background
+import Element.Font as Font
 import Url
 
 
@@ -80,5 +82,50 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Test"
     , body =
-        [ Element.layout [] (text "hello") ]
+        [ Element.layout [ width fill, height fill ]
+            (column [ width fill, height fill ]
+                [ navbar
+                , content
+                , footer
+                ]
+            )
+        ]
     }
+
+
+backgroundColor =
+    rgb255 255 255 255
+
+
+navbarColor =
+    rgb255 255 255 255
+
+
+navbar : Element Msg
+navbar =
+    row
+        [ width fill
+        , height (px 60)
+        , Background.color navbarColor
+        , spacing 20
+        , paddingXY 20 0
+        ]
+        [ el [ alignLeft, Font.extraBold ] (text "Runar Hummelsund")
+        , link [ alignRight ] { url = "", label = text "Github" }
+        ]
+
+
+content : Element Msg
+content =
+    row [ width fill, height fill, centerX, Background.color backgroundColor, padding 20 ]
+        [ el [ centerX ] (text "Hello") ]
+
+
+footer : Element Msg
+footer =
+    row [ width fill, height (px 60), alignBottom ]
+        []
+
+
+title =
+    32
