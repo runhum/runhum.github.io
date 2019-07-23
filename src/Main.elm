@@ -164,16 +164,24 @@ navbar model =
 content : Model -> Element Msg
 content model =
     let
-        buttonText =
+        ( buttonColor, buttonText ) =
             case model.life.gameState of
                 Life.Running ->
-                    "Pause"
+                    ( rgb255 255 69 58, "Pause" )
 
                 Life.Paused ->
-                    "Resume"
+                    ( rgb255 48 209 88, "Resume" )
     in
     column [ centerX, spacing 10 ]
-        [ Input.button [ centerX ] { onPress = Just (LifeMsg Life.toggleLife), label = text buttonText }
+        [ Input.button
+            [ centerX
+            , Background.color buttonColor
+            , padding 15
+            , Border.rounded 6
+            , Font.color (rgb 1 1 1)
+            , Font.bold
+            ]
+            { onPress = Just (LifeMsg Life.toggleLife), label = text buttonText }
         , el [ centerX ] <|
             Element.map LifeMsg <|
                 Life.view model.life
