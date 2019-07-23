@@ -138,9 +138,6 @@ update msg model =
 
                 updatedGrid =
                     Array.set cell.position.y newArray model.grid
-
-                _ =
-                    Debug.log "n count " (String.fromInt (getNeighbourCount cell updatedGrid))
             in
             ( { model | grid = updatedGrid }, Cmd.none )
 
@@ -164,9 +161,6 @@ update msg model =
 
                         Paused ->
                             Running
-
-                _ =
-                    Debug.log "New state " newGameState
             in
             ( { model | gameState = newGameState }, Cmd.none )
 
@@ -259,14 +253,16 @@ cellSize =
     15
 
 
-getCellColor : Cell -> Element.Color
-getCellColor cell =
+getCellColors : Cell -> List Element.Color
+getCellColors cell =
     case cell.state of
         Alive ->
-            rgb255 48 209 88
+            [ rgb255 48 209 88
+            , rgb255 52 199 89
+            ]
 
         Dead ->
-            rgba255 24 24 29 0.2
+            [ rgba255 24 24 29 0.2 ]
 
 
 cellView : Cell -> Element Msg
@@ -276,7 +272,7 @@ cellView cell =
         , height (px cellSize)
         , pointer
         , Border.rounded 4
-        , Background.color <| getCellColor cell
+        , Background.gradient { angle = 1, steps = getCellColors cell }
         , Events.onClick <| DidTapCell cell
         ]
         none
@@ -297,6 +293,11 @@ gridRow array =
 
 view : Model -> Element Msg
 view model =
-    column [ width fill, height fill, spacing verticalSpacing ] <|
+    column
+        [ width fill
+        , height fill
+        , spacing verticalSpacing
+        ]
+    <|
         Array.toList <|
             Array.map gridRow model.grid
