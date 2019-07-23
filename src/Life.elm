@@ -274,6 +274,7 @@ cellView cell =
     el
         [ width (px cellSize)
         , height (px cellSize)
+        , pointer
         , Border.rounded 4
         , Background.color <| getCellColor cell
         , Events.onClick <| DidTapCell cell
