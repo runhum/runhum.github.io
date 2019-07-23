@@ -59,10 +59,6 @@ toggleLife =
     ToggleGameState
 
 
-
--- Step and create a new geneartion
-
-
 createGrid : GridSize -> Grid
 createGrid ( rowCount, columnCount ) =
     Array.initialize columnCount <|
@@ -163,17 +159,6 @@ update msg model =
                             Running
             in
             ( { model | gameState = newGameState }, Cmd.none )
-
-
-
-{-
-
-
-
-
-
--}
--- Todo warping
 
 
 getNeighbourCount : Cell -> Grid -> Int
