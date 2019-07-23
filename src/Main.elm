@@ -8,7 +8,9 @@ import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
-import Life as Life
+import Page.Home
+import Page.Life
+import Page.Page as Page
 import Route as Route
 import Time
 import Url
@@ -36,19 +38,23 @@ main =
 
 type alias Model =
     { key : Nav.Key
-    , url : Url.Url
     , hoveringTab : Maybe NavBarTab
-    , life : Life.Model
+    , page : Page.Page
+    , route : Route.Route
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
-        ( life, cmd ) =
-            Life.init ( 50, 30 )
+        model =
+            { key = key
+            , hoveringTab = Nothing
+            , page = Page.Home Page.Home.initModel
+            , route = Route.fromURL url
+            }
     in
-    ( Model key url Nothing life, Cmd.none )
+    ( model, Cmd.none ) |> loadCurrentPage
 
 
 
@@ -59,14 +65,14 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | NavBarTabHovered NavBarTab
-    | LifeMsg Life.Msg
-    | Tick Time.Posix
+    | HomeMsg Page.Home.Msg
+    | LifeMsg Page.Life.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        LinkClicked urlRequest ->
+    case ( msg, model.page ) of
+        ( LinkClicked urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Nav.pushUrl model.key (Url.toString url) )
@@ -74,34 +80,59 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        UrlChanged url ->
-            ( { model | url = url }
+        ( UrlChanged url, _ ) ->
+            ( { model | route = Route.fromURL url }
             , Cmd.none
             )
 
-        NavBarTabHovered tab ->
+        ( NavBarTabHovered tab, _ ) ->
             ( { model | hoveringTab = Just tab }, Cmd.none )
 
-        LifeMsg subMsg ->
+        ( HomeMsg subMsg, Page.Home pageModel ) ->
             let
-                ( life, cmd ) =
-                    Life.update subMsg model.life
+                ( newPageModel, newCmd ) =
+                    Page.Home.update subMsg pageModel
             in
-            ( { model | life = life }, Cmd.map LifeMsg cmd )
+            ( { model | page = Page.Home newPageModel }, Cmd.map HomeMsg newCmd )
 
-        Tick posix ->
+        ( _, _ ) ->
             ( model, Cmd.none )
+
+
+loadCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+loadCurrentPage ( model, cmd ) =
+    let
+        ( page, newCmd ) =
+            case model.route of
+                Route.Home ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Home.init
+                    in
+                    ( Page.Home pageModel, Cmd.map HomeMsg pageCmd )
+
+                Route.GameOfLife ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Life.init ( 40, 40 )
+                    in
+                    ( Page.Life pageModel, Cmd.map LifeMsg pageCmd )
+
+                Route.NotFound ->
+                    ( Page.NotFound, cmd )
+    in
+    ( { model | page = page }, Cmd.batch [ cmd, newCmd ] )
 
 
 
 -- SUBSCRIPTIONS
+-- TODO!!
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map LifeMsg (Life.subscriptions model.life)
-        ]
+        []
 
 
 
@@ -168,29 +199,7 @@ navbar model =
 
 content : Model -> Element Msg
 content model =
-    let
-        ( buttonColor, buttonText ) =
-            case model.life.gameState of
-                Life.Running ->
-                    ( rgb255 255 69 58, "Pause" )
-
-                Life.Paused ->
-                    ( rgb255 48 209 88, "Resume" )
-    in
-    column [ centerX, spacing 10 ]
-        [ Input.button
-            [ centerX
-            , Background.color buttonColor
-            , padding 15
-            , Border.rounded 6
-            , Font.color (rgb 1 1 1)
-            , Font.bold
-            ]
-            { onPress = Just (LifeMsg Life.toggleLife), label = text buttonText }
-        , el [ centerX ] <|
-            Element.map LifeMsg <|
-                Life.view model.life
-        ]
+    el [] (text "Hello")
 
 
 footer : Element Msg

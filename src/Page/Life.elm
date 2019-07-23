@@ -1,4 +1,4 @@
-module Life exposing (GameState(..), Model, Msg, createGrid, init, subscriptions, toggleLife, update, view)
+module Page.Life exposing (GameState(..), Model, Msg, createGrid, init, subscriptions, toggleLife, update, view)
 
 import Array as Array exposing (Array)
 import Browser.Events
@@ -6,6 +6,7 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events as Events
+import Element.Font as Font
 import Element.Input as Input
 import Json.Decode as Decode
 import Time as Time
@@ -278,11 +279,32 @@ gridRow array =
 
 view : Model -> Element Msg
 view model =
-    column
-        [ width fill
-        , height fill
-        , spacing verticalSpacing
+    let
+        ( buttonColor, buttonText ) =
+            case model.gameState of
+                Running ->
+                    ( rgb255 255 69 58, "Pause" )
+
+                Paused ->
+                    ( rgb255 48 209 88, "Resume" )
+    in
+    column [ centerX, spacing 10 ]
+        [ Input.button
+            [ centerX
+            , Background.color buttonColor
+            , padding 15
+            , Border.rounded 6
+            , Font.color (rgb 1 1 1)
+            , Font.bold
+            ]
+            { onPress = Just ToggleGameState, label = text buttonText }
+        , el [ centerX ] <|
+            column
+                [ width fill
+                , height fill
+                , spacing verticalSpacing
+                ]
+            <|
+                Array.toList <|
+                    Array.map gridRow model.grid
         ]
-    <|
-        Array.toList <|
-            Array.map gridRow model.grid

@@ -1,4 +1,4 @@
-module Route exposing (Route(..), routeParser, routeToString)
+module Route exposing (Route(..), fromURL, routeParser, routeToString)
 
 import Url exposing (Url)
 import Url.Parser as Parser exposing (..)
@@ -7,6 +7,7 @@ import Url.Parser as Parser exposing (..)
 type Route
     = Home
     | GameOfLife
+    | NotFound
 
 
 routeParser : Parser (Route -> a) a
@@ -17,6 +18,11 @@ routeParser =
         ]
 
 
+fromURL : Url -> Route
+fromURL url =
+    Maybe.withDefault NotFound (Parser.parse routeParser url)
+
+
 routeToString : Route -> String
 routeToString route =
     case route of
@@ -25,3 +31,6 @@ routeToString route =
 
         GameOfLife ->
             "/life"
+
+        NotFound ->
+            "/"
