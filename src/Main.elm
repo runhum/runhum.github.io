@@ -84,6 +84,7 @@ update msg model =
             ( { model | route = Route.fromURL url }
             , Cmd.none
             )
+                |> loadCurrentPage
 
         ( NavBarTabHovered tab, _ ) ->
             ( { model | hoveringTab = Just tab }, Cmd.none )
@@ -94,6 +95,13 @@ update msg model =
                     Page.Home.update subMsg pageModel
             in
             ( { model | page = Page.Home newPageModel }, Cmd.map HomeMsg newCmd )
+
+        ( LifeMsg subMsg, Page.Life pageModel ) ->
+            let
+                ( newPageModel, newCmd ) =
+                    Page.Life.update subMsg pageModel
+            in
+            ( { model | page = Page.Life newPageModel }, Cmd.map LifeMsg newCmd )
 
         ( _, _ ) ->
             ( model, Cmd.none )
@@ -131,8 +139,15 @@ loadCurrentPage ( model, cmd ) =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        []
+    case model.page of
+        Page.Home subModel ->
+            Sub.map HomeMsg (Page.Home.subscriptions subModel)
+
+        Page.Life subModel ->
+            Sub.map LifeMsg (Page.Life.subscriptions subModel)
+
+        Page.NotFound ->
+            Sub.none
 
 
 
@@ -199,7 +214,20 @@ navbar model =
 
 content : Model -> Element Msg
 content model =
-    el [] (text "Hello")
+    case model.page of
+        Page.Home subPage ->
+            Page.Home.view subPage |> Element.map HomeMsg
+
+        Page.Life subPage ->
+            Page.Life.view subPage |> Element.map LifeMsg
+
+        Page.NotFound ->
+            notFoundView
+
+
+notFoundView : Element Msg
+notFoundView =
+    el [ centerX ] (text "Not Found :(")
 
 
 footer : Element Msg
