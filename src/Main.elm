@@ -9,6 +9,7 @@ import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 import Life as Life
+import Route as Route
 import Time
 import Url
 
@@ -145,7 +146,11 @@ navbar model =
         , spacing 20
         , paddingXY 20 0
         ]
-        [ el [ alignLeft, Font.extraBold ] (text "Runar Hummelsund")
+        [ link
+            [ alignLeft
+            , Font.extraBold
+            ]
+            { label = text "Runar Hummelsund", url = Route.routeToString Route.Home }
         , link
             [ alignRight
             , Events.onMouseEnter <| NavBarTabHovered GitHub
@@ -154,6 +159,10 @@ navbar model =
             , label =
                 text "GitHub"
             }
+        , link
+            [ alignRight
+            ]
+            { label = text "Life", url = Route.routeToString Route.GameOfLife }
         ]
 
 
