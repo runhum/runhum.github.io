@@ -4,7 +4,12 @@ import Browser
 import Browser.Navigation as Nav
 import Element exposing (..)
 import Element.Background as Background
+import Element.Border as Border
+import Element.Events as Events
 import Element.Font as Font
+import Element.Input as Input
+import Life as Life
+import Time
 import Url
 
 
@@ -31,12 +36,18 @@ main =
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
+    , hoveringTab : Maybe NavBarTab
+    , life : Life.Model
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Model key url, Cmd.none )
+    let
+        ( life, cmd ) =
+            Life.init ( 50, 30 )
+    in
+    ( Model key url Nothing life, Cmd.none )
 
 
 
@@ -46,6 +57,9 @@ init flags url key =
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | NavBarTabHovered NavBarTab
+    | LifeMsg Life.Msg
+    | Tick Time.Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -64,14 +78,29 @@ update msg model =
             , Cmd.none
             )
 
+        NavBarTabHovered tab ->
+            ( { model | hoveringTab = Just tab }, Cmd.none )
+
+        LifeMsg subMsg ->
+            let
+                ( life, cmd ) =
+                    Life.update subMsg model.life
+            in
+            ( { model | life = life }, Cmd.map LifeMsg cmd )
+
+        Tick posix ->
+            ( model, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    Sub.batch
+        [ Sub.map LifeMsg (Life.subscriptions model.life)
+        ]
 
 
 
@@ -80,12 +109,12 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Test"
+    { title = "Runar Hummelsund"
     , body =
-        [ Element.layout [ width fill, height fill ]
+        [ Element.layout []
             (column [ width fill, height fill ]
-                [ navbar
-                , content
+                [ navbar model
+                , content model
                 , footer
                 ]
             )
@@ -101,8 +130,14 @@ navbarColor =
     rgb255 255 255 255
 
 
-navbar : Element Msg
-navbar =
+type NavBarTab
+    = GitHub
+    | Link1
+    | Link2
+
+
+navbar : Model -> Element Msg
+navbar model =
     row
         [ width fill
         , height (px 60)
@@ -111,16 +146,38 @@ navbar =
         , paddingXY 20 0
         ]
         [ el [ alignLeft, Font.extraBold ] (text "Runar Hummelsund")
-        , link [ alignRight ] { url = "https://github.com/runhum", label = text "Github" }
-        , link [ alignRight ] { url = "", label = text "Link 1" }
-        , link [ alignRight ] { url = "", label = text "Link 2" }
+
+        {-
+
+           , link
+               [ alignRight
+               , Events.onMouseEnter <| NavBarTabHovered GitHub
+               ]
+               { url = "https://github.com/runhum"
+               , label =
+                   text "GitHub"
+               }
+        -}
         ]
 
 
-content : Element Msg
-content =
-    row [ width fill, height fill, centerX, Background.color backgroundColor, padding 20 ]
-        [ el [ centerX ] (text "Hello") ]
+content : Model -> Element Msg
+content model =
+    let
+        buttonText =
+            case model.life.gameState of
+                Life.Running ->
+                    "Pause"
+
+                Life.Paused ->
+                    "Resume"
+    in
+    column [ centerX, spacing 10 ]
+        [ Input.button [ centerX ] { onPress = Just (LifeMsg Life.toggleLife), label = text buttonText }
+        , el [ centerX ] <|
+            Element.map LifeMsg <|
+                Life.view model.life
+        ]
 
 
 footer : Element Msg
