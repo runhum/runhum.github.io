@@ -6083,6 +6083,26 @@ var author$project$Life$DidTapCell = function (a) {
 	return {$: 'DidTapCell', a: a};
 };
 var author$project$Life$cellSize = 15;
+var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var mdgriffith$elm_ui$Element$rgba255 = F4(
+	function (red, green, blue, a) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
+	});
+var author$project$Life$getCellColor = function (cell) {
+	var _n0 = cell.state;
+	if (_n0.$ === 'Alive') {
+		return A3(mdgriffith$elm_ui$Element$rgb255, 48, 209, 88);
+	} else {
+		return A4(mdgriffith$elm_ui$Element$rgba255, 24, 24, 29, 0.2);
+	}
+};
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -11465,18 +11485,6 @@ var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
-var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var mdgriffith$elm_ui$Element$rgba255 = F4(
-	function (red, green, blue, a) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
-	});
 var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
 var mdgriffith$elm_ui$Internal$Model$Colored = F3(
 	function (a, b, c) {
@@ -11503,6 +11511,17 @@ var mdgriffith$elm_ui$Element$Background$color = function (clr) {
 			'background-color',
 			clr));
 };
+var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
+var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + elm$core$String$fromInt(radius),
+			'border-radius',
+			elm$core$String$fromInt(radius) + 'px'));
+};
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -11525,14 +11544,6 @@ var mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 };
 var mdgriffith$elm_ui$Element$Events$onClick = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onClick);
 var author$project$Life$cellView = function (cell) {
-	var color = function () {
-		var _n0 = cell.state;
-		if (_n0.$ === 'Alive') {
-			return A3(mdgriffith$elm_ui$Element$rgb255, 48, 209, 88);
-		} else {
-			return A4(mdgriffith$elm_ui$Element$rgba255, 24, 24, 29, 0.2);
-		}
-	}();
 	return A2(
 		mdgriffith$elm_ui$Element$el,
 		_List_fromArray(
@@ -11541,13 +11552,15 @@ var author$project$Life$cellView = function (cell) {
 				mdgriffith$elm_ui$Element$px(author$project$Life$cellSize)),
 				mdgriffith$elm_ui$Element$height(
 				mdgriffith$elm_ui$Element$px(author$project$Life$cellSize)),
-				mdgriffith$elm_ui$Element$Background$color(color),
+				mdgriffith$elm_ui$Element$Border$rounded(4),
+				mdgriffith$elm_ui$Element$Background$color(
+				author$project$Life$getCellColor(cell)),
 				mdgriffith$elm_ui$Element$Events$onClick(
 				author$project$Life$DidTapCell(cell))
 			]),
 		mdgriffith$elm_ui$Element$none);
 };
-var author$project$Life$horizontalSpacing = 10;
+var author$project$Life$horizontalSpacing = 5;
 var mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var mdgriffith$elm_ui$Internal$Model$asRow = mdgriffith$elm_ui$Internal$Model$AsRow;
 var mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
@@ -11601,7 +11614,7 @@ var author$project$Life$gridRow = function (array) {
 		elm$core$Array$toList(
 			A2(elm$core$Array$map, author$project$Life$cellView, array)));
 };
-var author$project$Life$verticalSpacing = 10;
+var author$project$Life$verticalSpacing = 5;
 var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
 var mdgriffith$elm_ui$Element$column = F2(
@@ -11701,17 +11714,6 @@ var mdgriffith$elm_ui$Element$rgb = F3(
 	});
 var mdgriffith$elm_ui$Element$text = function (content) {
 	return mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
-var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + elm$core$String$fromInt(radius),
-			'border-radius',
-			elm$core$String$fromInt(radius) + 'px'));
 };
 var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
 var mdgriffith$elm_ui$Internal$Model$Class = F2(
@@ -11920,9 +11922,52 @@ var author$project$Main$footer = A2(
 			mdgriffith$elm_ui$Element$alignBottom
 		]),
 	_List_Nil);
+var author$project$Main$GitHub = {$: 'GitHub'};
+var author$project$Main$NavBarTabHovered = function (a) {
+	return {$: 'NavBarTabHovered', a: a};
+};
 var author$project$Main$navbarColor = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
 var mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var mdgriffith$elm_ui$Element$alignLeft = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Left);
+var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
+var elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
+var mdgriffith$elm_ui$Element$link = F2(
+	function (attrs, _n0) {
+		var url = _n0.url;
+		var label = _n0.label;
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asEl,
+			mdgriffith$elm_ui$Internal$Model$NodeName('a'),
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$Attr(
+					elm$html$Html$Attributes$href(url)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Internal$Model$Attr(
+						elm$html$Html$Attributes$rel('noopener noreferrer')),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						A2(
+							elm$core$List$cons,
+							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+							A2(
+								elm$core$List$cons,
+								mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + (mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + mdgriffith$elm_ui$Internal$Style$classes.link)))),
+								attrs))))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
 var mdgriffith$elm_ui$Element$paddingXY = F2(
 	function (x, y) {
 		return _Utils_eq(x, y) ? A2(
@@ -11945,6 +11990,13 @@ var mdgriffith$elm_ui$Element$paddingXY = F2(
 				y,
 				x));
 	});
+var elm$html$Html$Events$onMouseEnter = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'mouseenter',
+		elm$json$Json$Decode$succeed(msg));
+};
+var mdgriffith$elm_ui$Element$Events$onMouseEnter = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onMouseEnter);
 var mdgriffith$elm_ui$Element$Font$extraBold = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textExtraBold);
 var author$project$Main$navbar = function (model) {
 	return A2(
@@ -11964,7 +12016,19 @@ var author$project$Main$navbar = function (model) {
 				mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
 					[mdgriffith$elm_ui$Element$alignLeft, mdgriffith$elm_ui$Element$Font$extraBold]),
-				mdgriffith$elm_ui$Element$text('Runar Hummelsund'))
+				mdgriffith$elm_ui$Element$text('Runar Hummelsund')),
+				A2(
+				mdgriffith$elm_ui$Element$link,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$alignRight,
+						mdgriffith$elm_ui$Element$Events$onMouseEnter(
+						author$project$Main$NavBarTabHovered(author$project$Main$GitHub))
+					]),
+				{
+					label: mdgriffith$elm_ui$Element$text('GitHub'),
+					url: 'https://github.com/runhum'
+				})
 			]));
 };
 var mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(

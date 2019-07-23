@@ -4,6 +4,7 @@ import Array as Array exposing (Array)
 import Browser.Events
 import Element exposing (..)
 import Element.Background as Background
+import Element.Border as Border
 import Element.Events as Events
 import Element.Input as Input
 import Json.Decode as Decode
@@ -258,32 +259,34 @@ cellSize =
     15
 
 
+getCellColor : Cell -> Element.Color
+getCellColor cell =
+    case cell.state of
+        Alive ->
+            rgb255 48 209 88
+
+        Dead ->
+            rgba255 24 24 29 0.2
+
+
 cellView : Cell -> Element Msg
 cellView cell =
-    let
-        color =
-            case cell.state of
-                Alive ->
-                    rgb255 48 209 88
-
-                Dead ->
-                    rgba255 24 24 29 0.2
-    in
     el
         [ width (px cellSize)
         , height (px cellSize)
-        , Background.color color
+        , Border.rounded 4
+        , Background.color <| getCellColor cell
         , Events.onClick <| DidTapCell cell
         ]
         none
 
 
 horizontalSpacing =
-    10
+    5
 
 
 verticalSpacing =
-    10
+    5
 
 
 gridRow : Array Cell -> Element Msg

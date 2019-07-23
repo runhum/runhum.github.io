@@ -146,18 +146,14 @@ navbar model =
         , paddingXY 20 0
         ]
         [ el [ alignLeft, Font.extraBold ] (text "Runar Hummelsund")
-
-        {-
-
-           , link
-               [ alignRight
-               , Events.onMouseEnter <| NavBarTabHovered GitHub
-               ]
-               { url = "https://github.com/runhum"
-               , label =
-                   text "GitHub"
-               }
-        -}
+        , link
+            [ alignRight
+            , Events.onMouseEnter <| NavBarTabHovered GitHub
+            ]
+            { url = "https://github.com/runhum"
+            , label =
+                text "GitHub"
+            }
         ]
 
 
