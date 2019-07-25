@@ -7,6 +7,7 @@ import Url.Parser as Parser exposing (..)
 type Route
     = Home
     | GameOfLife
+    | Projects
     | NotFound
 
 
@@ -15,6 +16,7 @@ routeParser =
     oneOf
         [ map Home Parser.top
         , map GameOfLife (s "life")
+        , map Projects (s "projects")
         ]
 
 
@@ -31,6 +33,9 @@ routeToString route =
 
         GameOfLife ->
             "/life"
+
+        Projects ->
+            "/projects"
 
         NotFound ->
             "/"

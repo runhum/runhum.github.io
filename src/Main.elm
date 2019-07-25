@@ -11,6 +11,7 @@ import Element.Input as Input
 import Page.Home
 import Page.Life
 import Page.Page as Page
+import Page.Projects
 import Route as Route
 import Time
 import Url
@@ -67,6 +68,7 @@ type Msg
     | NavBarTabHovered NavBarTab
     | HomeMsg Page.Home.Msg
     | LifeMsg Page.Life.Msg
+    | ProjectsMsg Page.Projects.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -112,6 +114,9 @@ loadCurrentPage ( model, cmd ) =
     let
         ( page, newCmd ) =
             case model.route of
+                Route.NotFound ->
+                    ( Page.NotFound, cmd )
+
                 Route.Home ->
                     let
                         ( pageModel, pageCmd ) =
@@ -126,8 +131,12 @@ loadCurrentPage ( model, cmd ) =
                     in
                     ( Page.Life pageModel, Cmd.map LifeMsg pageCmd )
 
-                Route.NotFound ->
-                    ( Page.NotFound, cmd )
+                Route.Projects ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Projects.init
+                    in
+                    ( Page.Projects pageModel, Cmd.map ProjectsMsg pageCmd )
     in
     ( { model | page = page }, Cmd.batch [ cmd, newCmd ] )
 
@@ -140,14 +149,17 @@ loadCurrentPage ( model, cmd ) =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.page of
+        Page.NotFound ->
+            Sub.none
+
         Page.Home subModel ->
             Sub.map HomeMsg (Page.Home.subscriptions subModel)
 
         Page.Life subModel ->
             Sub.map LifeMsg (Page.Life.subscriptions subModel)
 
-        Page.NotFound ->
-            Sub.none
+        Page.Projects subModel ->
+            Sub.map ProjectsMsg (Page.Projects.subscriptions subModel)
 
 
 
@@ -205,6 +217,7 @@ navbar model =
             , label =
                 text "GitHub"
             }
+        , link [ alignRight ] { label = text "Projects", url = Route.routeToString Route.Projects }
         , link
             [ alignRight
             ]
@@ -214,15 +227,23 @@ navbar model =
 
 content : Model -> Element Msg
 content model =
-    case model.page of
-        Page.Home subPage ->
-            Page.Home.view subPage |> Element.map HomeMsg
+    let
+        page =
+            case model.page of
+                Page.Home subPage ->
+                    Page.Home.view subPage |> Element.map HomeMsg
 
-        Page.Life subPage ->
-            Page.Life.view subPage |> Element.map LifeMsg
+                Page.Life subPage ->
+                    Page.Life.view subPage |> Element.map LifeMsg
 
-        Page.NotFound ->
-            notFoundView
+                Page.Projects subPage ->
+                    Page.Projects.view subPage
+                        |> Element.map ProjectsMsg
+
+                Page.NotFound ->
+                    notFoundView
+    in
+    el [ height fill, width fill ] page
 
 
 notFoundView : Element Msg
@@ -232,8 +253,12 @@ notFoundView =
 
 footer : Element Msg
 footer =
-    row [ width fill, height (px 60), alignBottom ]
-        []
+    row [ width fill, height (px 60) ]
+        [ link [ centerX, alignBottom, paddingXY 0 5, Font.size 11, Font.color (rgb255 199 199 204) ]
+            { url = "https://elm-lang.org"
+            , label = text "Made with Elm"
+            }
+        ]
 
 
 title =
