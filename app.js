@@ -4422,6 +4422,9 @@ var author$project$Main$HomeMsg = function (a) {
 var author$project$Main$LifeMsg = function (a) {
 	return {$: 'LifeMsg', a: a};
 };
+var author$project$Main$ProjectsMsg = function (a) {
+	return {$: 'ProjectsMsg', a: a};
+};
 var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
@@ -4939,13 +4942,19 @@ var author$project$Page$Page$Life = function (a) {
 	return {$: 'Life', a: a};
 };
 var author$project$Page$Page$NotFound = {$: 'NotFound'};
+var author$project$Page$Page$Projects = function (a) {
+	return {$: 'Projects', a: a};
+};
+var author$project$Page$Projects$init = _Utils_Tuple2('', elm$core$Platform$Cmd$none);
 var elm$core$Platform$Cmd$map = _Platform_map;
-var author$project$Main$loadCurrentPage = function (_n0) {
+var author$project$Main$loadPage = function (_n0) {
 	var model = _n0.a;
 	var cmd = _n0.b;
 	var _n1 = function () {
 		var _n2 = model.route;
 		switch (_n2.$) {
+			case 'NotFound':
+				return _Utils_Tuple2(author$project$Page$Page$NotFound, cmd);
 			case 'Home':
 				var _n3 = author$project$Page$Home$init;
 				var pageModel = _n3.a;
@@ -4962,7 +4971,12 @@ var author$project$Main$loadCurrentPage = function (_n0) {
 					author$project$Page$Page$Life(pageModel),
 					A2(elm$core$Platform$Cmd$map, author$project$Main$LifeMsg, pageCmd));
 			default:
-				return _Utils_Tuple2(author$project$Page$Page$NotFound, cmd);
+				var _n5 = author$project$Page$Projects$init;
+				var pageModel = _n5.a;
+				var pageCmd = _n5.b;
+				return _Utils_Tuple2(
+					author$project$Page$Page$Projects(pageModel),
+					A2(elm$core$Platform$Cmd$map, author$project$Main$ProjectsMsg, pageCmd));
 		}
 	}();
 	var page = _n1.a;
@@ -4979,6 +4993,7 @@ var author$project$Page$Home$initModel = '';
 var author$project$Route$NotFound = {$: 'NotFound'};
 var author$project$Route$GameOfLife = {$: 'GameOfLife'};
 var author$project$Route$Home = {$: 'Home'};
+var author$project$Route$Projects = {$: 'Projects'};
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -5156,7 +5171,11 @@ var author$project$Route$routeParser = elm$url$Url$Parser$oneOf(
 			A2(
 			elm$url$Url$Parser$map,
 			author$project$Route$GameOfLife,
-			elm$url$Url$Parser$s('life'))
+			elm$url$Url$Parser$s('life')),
+			A2(
+			elm$url$Url$Parser$map,
+			author$project$Route$Projects,
+			elm$url$Url$Parser$s('projects'))
 		]));
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5811,7 +5830,7 @@ var author$project$Main$init = F3(
 			page: author$project$Page$Page$Home(author$project$Page$Home$initModel),
 			route: author$project$Route$fromURL(url)
 		};
-		return author$project$Main$loadCurrentPage(
+		return author$project$Main$loadPage(
 			_Utils_Tuple2(model, elm$core$Platform$Cmd$none));
 	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
@@ -6127,10 +6146,15 @@ var author$project$Page$Life$subscriptions = function (model) {
 				A2(elm$time$Time$every, 250, author$project$Page$Life$Tick)
 			]));
 };
+var author$project$Page$Projects$subscriptions = function (model) {
+	return elm$core$Platform$Sub$none;
+};
 var elm$core$Platform$Sub$map = _Platform_map;
 var author$project$Main$subscriptions = function (model) {
 	var _n0 = model.page;
 	switch (_n0.$) {
+		case 'NotFound':
+			return elm$core$Platform$Sub$none;
 		case 'Home':
 			var subModel = _n0.a;
 			return A2(
@@ -6144,7 +6168,11 @@ var author$project$Main$subscriptions = function (model) {
 				author$project$Main$LifeMsg,
 				author$project$Page$Life$subscriptions(subModel));
 		default:
-			return elm$core$Platform$Sub$none;
+			var subModel = _n0.a;
+			return A2(
+				elm$core$Platform$Sub$map,
+				author$project$Main$ProjectsMsg,
+				author$project$Page$Projects$subscriptions(subModel));
 	}
 };
 var author$project$Page$Home$update = F2(
@@ -6449,6 +6477,10 @@ var author$project$Page$Life$update = F2(
 					elm$core$Platform$Cmd$none);
 		}
 	});
+var author$project$Page$Projects$update = F2(
+	function (msg, model) {
+		return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+	});
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
 };
@@ -6714,7 +6746,7 @@ var elm$url$Url$toString = function (url) {
 var author$project$Main$update = F2(
 	function (msg, model) {
 		var _n0 = _Utils_Tuple2(msg, model.page);
-		_n0$5:
+		_n0$6:
 		while (true) {
 			switch (_n0.a.$) {
 				case 'LinkClicked':
@@ -6735,7 +6767,7 @@ var author$project$Main$update = F2(
 					}
 				case 'UrlChanged':
 					var url = _n0.a.a;
-					return author$project$Main$loadCurrentPage(
+					return author$project$Main$loadPage(
 						_Utils_Tuple2(
 							_Utils_update(
 								model,
@@ -6767,9 +6799,9 @@ var author$project$Main$update = F2(
 								}),
 							A2(elm$core$Platform$Cmd$map, author$project$Main$HomeMsg, newCmd));
 					} else {
-						break _n0$5;
+						break _n0$6;
 					}
-				default:
+				case 'LifeMsg':
 					if (_n0.b.$ === 'Life') {
 						var subMsg = _n0.a.a;
 						var pageModel = _n0.b.a;
@@ -6784,7 +6816,24 @@ var author$project$Main$update = F2(
 								}),
 							A2(elm$core$Platform$Cmd$map, author$project$Main$LifeMsg, newCmd));
 					} else {
-						break _n0$5;
+						break _n0$6;
+					}
+				default:
+					if (_n0.b.$ === 'Projects') {
+						var subMsg = _n0.a.a;
+						var pageModel = _n0.b.a;
+						var _n4 = A2(author$project$Page$Projects$update, subMsg, pageModel);
+						var newPageModel = _n4.a;
+						var newCmd = _n4.b;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									page: author$project$Page$Page$Projects(newPageModel)
+								}),
+							A2(elm$core$Platform$Cmd$map, author$project$Main$ProjectsMsg, newCmd));
+					} else {
+						break _n0$6;
 					}
 			}
 		}
@@ -12624,6 +12673,13 @@ var author$project$Page$Life$view = function (model) {
 						A2(elm$core$Array$map, author$project$Page$Life$gridRow, model.grid))))
 			]));
 };
+var author$project$Page$Projects$view = function (model) {
+	return A2(
+		mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[mdgriffith$elm_ui$Element$centerX]),
+		mdgriffith$elm_ui$Element$text('Todo'));
+};
 var elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var mdgriffith$elm_ui$Internal$Model$map = F2(
 	function (fn, el) {
@@ -12657,23 +12713,39 @@ var mdgriffith$elm_ui$Internal$Model$map = F2(
 	});
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Main$content = function (model) {
-	var _n0 = model.page;
-	switch (_n0.$) {
-		case 'Home':
-			var subPage = _n0.a;
-			return A2(
-				mdgriffith$elm_ui$Element$map,
-				author$project$Main$HomeMsg,
-				author$project$Page$Home$view(subPage));
-		case 'Life':
-			var subPage = _n0.a;
-			return A2(
-				mdgriffith$elm_ui$Element$map,
-				author$project$Main$LifeMsg,
-				author$project$Page$Life$view(subPage));
-		default:
-			return author$project$Main$notFoundView;
-	}
+	var page = function () {
+		var _n0 = model.page;
+		switch (_n0.$) {
+			case 'Home':
+				var subPage = _n0.a;
+				return A2(
+					mdgriffith$elm_ui$Element$map,
+					author$project$Main$HomeMsg,
+					author$project$Page$Home$view(subPage));
+			case 'Life':
+				var subPage = _n0.a;
+				return A2(
+					mdgriffith$elm_ui$Element$map,
+					author$project$Main$LifeMsg,
+					author$project$Page$Life$view(subPage));
+			case 'Projects':
+				var subPage = _n0.a;
+				return A2(
+					mdgriffith$elm_ui$Element$map,
+					author$project$Main$ProjectsMsg,
+					author$project$Page$Projects$view(subPage));
+			default:
+				return author$project$Main$notFoundView;
+		}
+	}();
+	return A2(
+		mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		page);
 };
 var mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
 var mdgriffith$elm_ui$Element$alignBottom = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Bottom);
@@ -12783,6 +12855,8 @@ var author$project$Route$routeToString = function (route) {
 			return '/';
 		case 'GameOfLife':
 			return '/life';
+		case 'Projects':
+			return '/projects';
 		default:
 			return '/';
 	}
@@ -12832,6 +12906,14 @@ var author$project$Main$navbar = function (model) {
 				{
 					label: mdgriffith$elm_ui$Element$text('GitHub'),
 					url: 'https://github.com/runhum'
+				}),
+				A2(
+				mdgriffith$elm_ui$Element$link,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$alignRight]),
+				{
+					label: mdgriffith$elm_ui$Element$text('Projects'),
+					url: author$project$Route$routeToString(author$project$Route$Projects)
 				}),
 				A2(
 				mdgriffith$elm_ui$Element$link,

@@ -55,7 +55,7 @@ init flags url key =
             , route = Route.fromURL url
             }
     in
-    ( model, Cmd.none ) |> loadCurrentPage
+    ( model, Cmd.none ) |> loadPage
 
 
 
@@ -86,7 +86,7 @@ update msg model =
             ( { model | route = Route.fromURL url }
             , Cmd.none
             )
-                |> loadCurrentPage
+                |> loadPage
 
         ( NavBarTabHovered tab, _ ) ->
             ( { model | hoveringTab = Just tab }, Cmd.none )
@@ -105,12 +105,19 @@ update msg model =
             in
             ( { model | page = Page.Life newPageModel }, Cmd.map LifeMsg newCmd )
 
+        ( ProjectsMsg subMsg, Page.Projects pageModel ) ->
+            let
+                ( newPageModel, newCmd ) =
+                    Page.Projects.update subMsg pageModel
+            in
+            ( { model | page = Page.Projects newPageModel }, Cmd.map ProjectsMsg newCmd )
+
         ( _, _ ) ->
             ( model, Cmd.none )
 
 
-loadCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-loadCurrentPage ( model, cmd ) =
+loadPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+loadPage ( model, cmd ) =
     let
         ( page, newCmd ) =
             case model.route of
