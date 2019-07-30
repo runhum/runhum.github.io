@@ -6459,8 +6459,6 @@ var author$project$Page$Life$update = F2(
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
-			case 'NextGeneration':
-				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 			default:
 				var newGameState = function () {
 					var _n3 = model.gameState;
@@ -12218,7 +12216,6 @@ var author$project$Page$Home$view = function (model) {
 			[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
 		mdgriffith$elm_ui$Element$text('Hello'));
 };
-var author$project$Page$Life$ToggleGameState = {$: 'ToggleGameState'};
 var author$project$Page$Life$DidTapCell = function (a) {
 	return {$: 'DidTapCell', a: a};
 };
@@ -12427,31 +12424,7 @@ var author$project$Page$Life$gridRow = function (array) {
 		elm$core$Array$toList(
 			A2(elm$core$Array$map, author$project$Page$Life$cellView, array)));
 };
-var author$project$Page$Life$verticalSpacing = 5;
-var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
-var mdgriffith$elm_ui$Element$column = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asColumn,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
+var author$project$Page$Life$ToggleGameState = {$: 'ToggleGameState'};
 var mdgriffith$elm_ui$Internal$Flag$padding = mdgriffith$elm_ui$Internal$Flag$flag(2);
 var mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
@@ -12617,10 +12590,9 @@ var mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var author$project$Page$Life$view = function (model) {
+var author$project$Page$Life$playButton = function (gameState) {
 	var _n0 = function () {
-		var _n1 = model.gameState;
-		if (_n1.$ === 'Running') {
+		if (gameState.$ === 'Running') {
 			return _Utils_Tuple2(
 				A3(mdgriffith$elm_ui$Element$rgb255, 255, 69, 58),
 				'Pause');
@@ -12633,6 +12605,49 @@ var author$project$Page$Life$view = function (model) {
 	var buttonColor = _n0.a;
 	var buttonText = _n0.b;
 	return A2(
+		mdgriffith$elm_ui$Element$Input$button,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$centerX,
+				mdgriffith$elm_ui$Element$Background$color(buttonColor),
+				mdgriffith$elm_ui$Element$padding(15),
+				mdgriffith$elm_ui$Element$Border$rounded(6),
+				mdgriffith$elm_ui$Element$Font$color(
+				A3(mdgriffith$elm_ui$Element$rgb, 1, 1, 1)),
+				mdgriffith$elm_ui$Element$Font$bold
+			]),
+		{
+			label: mdgriffith$elm_ui$Element$text(buttonText),
+			onPress: elm$core$Maybe$Just(author$project$Page$Life$ToggleGameState)
+		});
+};
+var author$project$Page$Life$verticalSpacing = 5;
+var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
+var mdgriffith$elm_ui$Element$column = F2(
+	function (attrs, children) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asColumn,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
+var author$project$Page$Life$view = function (model) {
+	return A2(
 		mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
@@ -12641,22 +12656,7 @@ var author$project$Page$Life$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				A2(
-				mdgriffith$elm_ui$Element$Input$button,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$centerX,
-						mdgriffith$elm_ui$Element$Background$color(buttonColor),
-						mdgriffith$elm_ui$Element$padding(15),
-						mdgriffith$elm_ui$Element$Border$rounded(6),
-						mdgriffith$elm_ui$Element$Font$color(
-						A3(mdgriffith$elm_ui$Element$rgb, 1, 1, 1)),
-						mdgriffith$elm_ui$Element$Font$bold
-					]),
-				{
-					label: mdgriffith$elm_ui$Element$text(buttonText),
-					onPress: elm$core$Maybe$Just(author$project$Page$Life$ToggleGameState)
-				}),
+				author$project$Page$Life$playButton(model.gameState),
 				A2(
 				mdgriffith$elm_ui$Element$el,
 				_List_fromArray(

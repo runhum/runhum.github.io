@@ -12,6 +12,19 @@ import Json.Decode as Decode
 import Time as Time
 
 
+
+-- INIT
+
+
+init : GridSize -> ( Model, Cmd Msg )
+init size =
+    ( Model (createGrid size) Paused, Cmd.none )
+
+
+
+-- MODEL
+
+
 type alias Model =
     { grid : Grid
     , gameState : GameState
@@ -21,15 +34,6 @@ type alias Model =
 type GameState
     = Running
     | Paused
-
-
-type Key
-    = Spacebar
-
-
-init : GridSize -> ( Model, Cmd Msg )
-init size =
-    ( Model (createGrid size) Paused, Cmd.none )
 
 
 type alias Position =
@@ -89,34 +93,6 @@ getCell position grid =
 -- UPDATE
 
 
-type Msg
-    = DidTapCell Cell
-    | Tick Time.Posix
-    | NextGeneration
-    | ToggleGameState
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Time.every 250 Tick
-        ]
-
-
-toggleCellState : Cell -> Cell
-toggleCellState cell =
-    let
-        newState =
-            case cell.state of
-                Alive ->
-                    Dead
-
-                Dead ->
-                    Alive
-    in
-    { state = newState, position = cell.position }
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -146,9 +122,6 @@ update msg model =
                 Paused ->
                     ( model, Cmd.none )
 
-        NextGeneration ->
-            ( model, Cmd.none )
-
         ToggleGameState ->
             let
                 newGameState =
@@ -160,6 +133,33 @@ update msg model =
                             Running
             in
             ( { model | gameState = newGameState }, Cmd.none )
+
+
+type Msg
+    = DidTapCell Cell
+    | Tick Time.Posix
+    | ToggleGameState
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Time.every 250 Tick
+        ]
+
+
+toggleCellState : Cell -> Cell
+toggleCellState cell =
+    let
+        newState =
+            case cell.state of
+                Alive ->
+                    Dead
+
+                Dead ->
+                    Alive
+    in
+    { state = newState, position = cell.position }
 
 
 getNeighbourCount : Cell -> Grid -> Int
@@ -193,7 +193,8 @@ getNeighbourCount cell grid =
             inGrid { x = cell.position.x - 1, y = cell.position.y + 1 }
 
         neighbours =
-            List.filter (\c -> c.state == Alive) <| List.filterMap identity [ left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft ]
+            List.filter (\c -> c.state == Alive) <|
+                List.filterMap identity [ left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft ]
     in
     List.length neighbours
 
@@ -233,6 +234,44 @@ generateNext model =
 
 
 -- VIEW
+
+
+view : Model -> Element Msg
+view model =
+    column [ centerX, spacing 10 ]
+        [ playButton model.gameState
+        , el [ centerX ] <|
+            column
+                [ width fill
+                , height fill
+                , spacing verticalSpacing
+                ]
+            <|
+                Array.toList <|
+                    Array.map gridRow model.grid
+        ]
+
+
+playButton : GameState -> Element Msg
+playButton gameState =
+    let
+        ( buttonColor, buttonText ) =
+            case gameState of
+                Running ->
+                    ( rgb255 255 69 58, "Pause" )
+
+                Paused ->
+                    ( rgb255 48 209 88, "Resume" )
+    in
+    Input.button
+        [ centerX
+        , Background.color buttonColor
+        , padding 15
+        , Border.rounded 6
+        , Font.color (rgb 1 1 1)
+        , Font.bold
+        ]
+        { onPress = Just ToggleGameState, label = text buttonText }
 
 
 cellSize =
@@ -275,36 +314,3 @@ verticalSpacing =
 gridRow : Array Cell -> Element Msg
 gridRow array =
     row [ spacing horizontalSpacing ] (Array.toList <| Array.map cellView array)
-
-
-view : Model -> Element Msg
-view model =
-    let
-        ( buttonColor, buttonText ) =
-            case model.gameState of
-                Running ->
-                    ( rgb255 255 69 58, "Pause" )
-
-                Paused ->
-                    ( rgb255 48 209 88, "Resume" )
-    in
-    column [ centerX, spacing 10 ]
-        [ Input.button
-            [ centerX
-            , Background.color buttonColor
-            , padding 15
-            , Border.rounded 6
-            , Font.color (rgb 1 1 1)
-            , Font.bold
-            ]
-            { onPress = Just ToggleGameState, label = text buttonText }
-        , el [ centerX ] <|
-            column
-                [ width fill
-                , height fill
-                , spacing verticalSpacing
-                ]
-            <|
-                Array.toList <|
-                    Array.map gridRow model.grid
-        ]
